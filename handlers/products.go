@@ -10,6 +10,7 @@ import (
 )
 
 type Products struct {
+	ss
 	l *log.Logger
 }
 
