@@ -21,8 +21,14 @@ func main() {
 	// Create servers
 	sm := mux.NewRouter()
 
-	getRouther := sm.Methods("GET").Subrouter()
-	getRouther.HandleFunc("/", ph.GetProducts)
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", ph.GetProducts)
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ph.AddProducts)
 
 	// create server
 	s := &http.Server{
