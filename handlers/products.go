@@ -3,8 +3,6 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"regexp"
-	"strconv"
 
 	"github.com/xanthangum1/gorilla_micro/data"
 )
@@ -15,49 +13,6 @@ type Products struct {
 
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
-}
-
-func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		p.GetProducts(rw, r)
-		return
-	}
-	//handle an create
-	if r.Method == http.MethodPost {
-		p.addProducts(rw, r)
-		return
-	}
-
-	//handle an update
-	if r.Method == http.MethodPut {
-		p.l.Println("PUT")
-		reg := regexp.MustCompile(`/([0-9]+)`)
-		g := reg.FindAllStringSubmatch(r.URL.Path, -1)
-
-		if len(g) != 1 {
-			http.Error(rw, "invalid URI. more than 1.", http.StatusBadRequest)
-			return
-		}
-
-		if len(g[0]) != 2 {
-			http.Error(rw, "invalid URI. more than 1 capture group.", http.StatusBadRequest)
-			return
-		}
-
-		idString := g[0][1]
-		id, err := strconv.Atoi(idString)
-		if err != nil {
-			http.Error(rw, "Invalid URI. unable to convert to number.", http.StatusBadRequest)
-			return
-		}
-		p.l.Println("got id", id)
-		p.updateProducts(id, rw, r)
-	}
-
-	return
-	// Catch all
-	rw.WriteHeader(http.StatusMethodNotAllowed)
-
 }
 
 //GetProducts returns products from data store
