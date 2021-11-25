@@ -1,7 +1,21 @@
+//  Documentation for Product API
+//
+//  Schemes: http
+//  BasePath: /
+//  Version: 1.0.0
+//
+//  Consumes:
+//  - application/json
+//
+//  Produces:
+//  - application/json
+//  swagger:meta
+
 package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,21 +24,33 @@ import (
 	"github.com/xanthangum1/gorilla_micro/data"
 )
 
+// A list of products returns in the response
+// swagger:response productsReponse
+type productsReponse struct {
+	// All products in the system
+	// in: body
+	Body []data.Product
+}
+
+// swagger:response noContent
+type ProductsNoContent struct {
+}
+
+// swagger:parameters deleteProduct
+type productIDParameterWrapper struct {
+	// The id of the product to delete from the database
+	// in: path
+	// required: true
+	ID int `json:"id"`
+}
+
+// Products is a http.Handler
 type Products struct {
 	l *log.Logger
 }
 
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
-}
-
-//GetProducts returns products from data store
-func (p *Products) GetProducts(rw http.ResponseWriter, h *http.Request) {
-	lp := data.GetProducts()
-	err := lp.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
 }
 
 // Creates a Product
@@ -65,6 +91,14 @@ func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 		if err != nil {
 			p.l.Println("[ERROR] deserializing product", err)
 			http.Error(rw, "unable to unmarshal json", http.StatusBadRequest)
+			return
+		}
+
+		// validate the product
+		err = prod.Validate()
+		if err != nil {
+			p.l.Println("[ERROR] validating product", err)
+			http.Error(rw, fmt.Sprintf("Error validating product: %s", err), http.StatusBadRequest)
 			return
 		}
 
