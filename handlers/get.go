@@ -6,20 +6,59 @@ import (
 	"github.com/xanthangum1/gorilla_micro/data"
 )
 
-// swagger:route GET /products products getProducts
-// Returns a list of products
+// swagger:route GET /products products listProducts
+// Returns a list of products from the database
 // responses:
 //	200: productsReponse
 
-// GetProducts return the poducts from the data store
-func (p *Products) GetProducts(rw http.ResponseWriter, h *http.Request) {
+// ListAll handles GET requests and returns all current products
+func (p *Products) ListAll(rw http.ResponseWriter, h *http.Request) {
+	p.l.Println("[DEBUG] get all records")
 
-	//fetch products from datastore
-	lp := data.GetProducts()
+	prods := data.GetProducts()
 
-	//serialize the list to JSON
-	err := lp.ToJSON(rw)
+	err := data.ToJSON(prods, rw)
 	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
+		// we should never be here but log the error just incase
+		p.l.Println("[ERROR] serializing product", err)
 	}
+}
+
+//swagger:route GET /products/{id} products listSingle
+// Reutnr a list of proucts from the database
+// responses:
+// 	200: productResponse
+//  404: errorResponse
+
+// ListSingle handles GET requests
+func (p *Products) ListSingle(rw http.ResponseWriter, r *http.Request) {
+	id := getProductID(r)
+
+	p.l.Println("[DEBUG] get record id", id)
+
+	prod, err := data.GetPRoductByID(id)
+
+	switch err {
+	case nil:
+
+	case data.ErrProductNotFound
+		p.l.Println("[ERROR] fetching product", err)
+
+		rw.WriteHeader(Http.StatusNotFound)
+		data.ToJSON(&GenericError{Message: err.Error()}, rw)
+		return
+	default:
+		p.l.Println("[ERROR] fetching product", err)
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		data.ToJSON(&GenericError{Message: err.Error()}, rw)
+		return
+	}
+
+	err = data.ToJSON(prod. rw)
+	if err != nil {
+		// if error on making response
+		p.l.Println("[ERROR] serializing product", err)
+	}
+
 }
