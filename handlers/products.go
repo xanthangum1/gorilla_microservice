@@ -1,3 +1,16 @@
+//  Documentation for Product API
+//
+//  Schemes: http
+//  BasePath: /
+//  Version: 1.0.0
+//
+//  Consumes:
+//  - application/json
+//
+//  Produces:
+//  - application/json
+//  swagger:meta
+
 package handlers
 
 import (
@@ -11,18 +24,13 @@ import (
 	"github.com/xanthangum1/gorilla_micro/data"
 )
 
-// Documentation for Product API
-//
-// Schemes: http
-// BasePath: /
-// Version: 1.0.0
-//
-// Consumes:
-// - application/json
-//
-// Produces:
-// - application/json
-// swagger:meta
+// A list of products returns in the response
+// swagger: response productsReponse
+type productsReponse struct {
+	// All products in the system
+	// in: body
+	Body []data.Product
+}
 
 type Products struct {
 	l *log.Logger
@@ -30,15 +38,6 @@ type Products struct {
 
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
-}
-
-//GetProducts returns products from data store
-func (p *Products) GetProducts(rw http.ResponseWriter, h *http.Request) {
-	lp := data.GetProducts()
-	err := lp.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "Unable to marshal json", http.StatusInternalServerError)
-	}
 }
 
 // Creates a Product
