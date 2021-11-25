@@ -1,12 +1,6 @@
 package data
 
 import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"regexp"
-	"time"
-
 	"github.com/go-playground/validator"
 )
 
@@ -44,45 +38,46 @@ type Product struct {
 	SKU string `json:"sku" validate:"sku"`
 }
 
+var productList = []*Product{
+	&Product{
+		ID:          1,
+		Name:        "Latte",
+		Description: "Frothy mily coffee",
+		Price:       2.45,
+		SKU:         "abc-eee-fff",
+	},
+
+	&Product{
+		ID:          2,
+		Name:        "Latte",
+		Description: "Frothy mily coffee",
+		Price:       2.45,
+		SKU:         "aaa-aaa-aaa",
+	},
+}
+
 // Products defines a slice of a Product
 type Products []*Product
 
-func (p *Product) Validate() error {
-	validate := validator.New()
-	validate.RegisterValidation("sku", validateSKU)
-
-	return validate.Struct(p)
-}
-
-func validateSKU(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
-	matches := re.FindAllString(fl.Field().String(), -1)
-	if len(matches) != 1 {
-		return false
-	}
-
-	return true
-}
-
-func (p *Products) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(p)
-}
-
-func (p *Product) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(p)
-}
-
+// GetProducts returns all products from the database
 func GetProducts() Products {
 	return productList
 }
 
-func AddProduct(p *Product) {
-	p.ID = getNextID()
-	productList = append(productList, p)
+// GetPRoductByID returns a single product which matches the id from the database
+// If a product is not found this function returns a ProductNotFound error
+func GetProductByID(id int) (*Product, error) {
+	i := findIndexByProductID(id)
+	if id == -1 {
+		return il, ErrProductNotFound
+	}
+
+	return ProductList[i], nil
 }
 
+// UpdateProduct replaces a product in the database wit hthe given item
+// If a product with the given Id does not exist  in the databse
+// this function returns a ProductNotFound error
 func UpdateProduct(id int, p *Product) error {
 	_, pos, err := findProduct(id)
 	if err != nil {
@@ -93,6 +88,14 @@ func UpdateProduct(id int, p *Product) error {
 	productList[pos] = p
 
 	return nil
+}
+
+// AddProduct adds a new product to the database
+func AddProduct(p *Product) {
+	// get the next id in sequence
+	maxID := productList[len(productList)-1].ID
+	p.ID = maxID + 1
+	productList = append(productList, &p)
 }
 
 // DeleteProduct deletes a product from the database
@@ -119,40 +122,9 @@ func findIndexByProductID(id int) int {
 	return -1
 }
 
-var ErrProductNotFound = fmt.Errorf("Product Not Found")
+func (p *Product) Validate() error {
+	validate := validator.New()
+	validate.RegisterValidation("sku", validateSKU)
 
-func findProduct(id int) (*Product, int, error) {
-	for i, p := range productList {
-		if p.ID == id {
-			return p, i, nil
-		}
-	}
-	return nil, -1, ErrProductNotFound
-}
-
-func getNextID() int {
-	lp := productList[len(productList)-1]
-	return lp.ID + 1
-}
-
-var productList = []*Product{
-	&Product{
-		ID:          1,
-		Name:        "Latte",
-		Description: "Frothy mily coffee",
-		Price:       2.45,
-		SKU:         "abc323",
-		CreatedOn:   time.Now().UTC().String(),
-		UpdatedOn:   time.Now().UTC().String(),
-	},
-
-	&Product{
-		ID:          2,
-		Name:        "Latte",
-		Description: "Frothy mily coffee",
-		Price:       2.45,
-		SKU:         "abc323",
-		CreatedOn:   time.Now().UTC().String(),
-		UpdatedOn:   time.Now().UTC().String(),
-	},
+	return validate.Struct(p)
 }
