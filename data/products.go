@@ -41,25 +41,7 @@ type Product struct {
 	SKU string `json:"sku" validate:"sku"`
 }
 
-var productList = []*Product{
-	&Product{
-		ID:          1,
-		Name:        "Latte",
-		Description: "Frothy mily coffee",
-		Price:       2.45,
-		SKU:         "abc-eee-fff",
-	},
-
-	&Product{
-		ID:          2,
-		Name:        "Latte",
-		Description: "Frothy mily coffee",
-		Price:       2.45,
-		SKU:         "aaa-aaa-aaa",
-	},
-}
-
-// Products defines a slice of a Product
+// Products defines a slice of Product
 type Products []*Product
 
 // GetProducts returns all products from the database
@@ -67,7 +49,8 @@ func GetProducts() Products {
 	return productList
 }
 
-// GetProductByID returns a single product which matches the id from the database
+// GetProductByID returns a single product which matches the id from the
+// database.
 // If a product is not found this function returns a ProductNotFound error
 func GetProductByID(id int) (*Product, error) {
 	i := findIndexByProductID(id)
@@ -78,8 +61,9 @@ func GetProductByID(id int) (*Product, error) {
 	return productList[i], nil
 }
 
-// UpdateProduct replaces a product in the database with the given item
-// If a product with the given id does not exist in the databse
+// UpdateProduct replaces a product in the database with the given
+// item.
+// If a product with the given id does not exist in the database
 // this function returns a ProductNotFound error
 func UpdateProduct(p Product) error {
 	i := findIndexByProductID(p.ID)
@@ -123,4 +107,21 @@ func findIndexByProductID(id int) int {
 	}
 
 	return -1
+}
+
+var productList = []*Product{
+	&Product{
+		ID:          1,
+		Name:        "Latte",
+		Description: "Frothy milky coffee",
+		Price:       2.45,
+		SKU:         "abc323",
+	},
+	&Product{
+		ID:          2,
+		Name:        "Esspresso",
+		Description: "Short and strong coffee without milk",
+		Price:       1.99,
+		SKU:         "fjd34",
+	},
 }

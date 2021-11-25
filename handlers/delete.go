@@ -7,17 +7,20 @@ import (
 )
 
 // swagger:route DELETE /products/{id} products deleteProduct
-// Returns nothing
+// Update a products details
+//
 // responses:
-//	201: noContent
+//	201: noContentResponse
+//  404: errorResponse
+//  501: errorResponse
 
-// DeleteProduct deletes a product from data store
-func (p *Products) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
+// Delete handles DELETE requests and removes items from the database
+func (p *Products) Delete(rw http.ResponseWriter, r *http.Request) {
 	id := getProductID(r)
 
-	p.l.Println("[DEBUG] deleting recordid", id)
+	p.l.Println("[DEBUG] deleting record id", id)
 
-	err := data.ErrProductNotFound(id)
+	err := data.DeleteProduct(id)
 	if err == data.ErrProductNotFound {
 		p.l.Println("[ERROR] deleting record id does not exist")
 
