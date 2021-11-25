@@ -3,7 +3,7 @@ paths:
   /products:
     get:
       description: Returns a list of products
-      operationId: GetProducts
+      operationId: getProducts
       responses:
         "200":
           $ref: '#/responses/productsReponse'

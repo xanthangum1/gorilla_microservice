@@ -8,6 +8,12 @@ import (
 	"github.com/xanthangum1/gorilla_micro/data"
 )
 
+// swagger:route DELETE /products/{id} products deleteProduct
+// Returns nothing
+// responses:
+//	201: noContent
+
+// DeleteProduct deletes a product from data store
 func (p *Products) DeleteProduct(rw http.ResponseWriter, r *http.Request) {
 	// this will always convert because of the router
 	vars := mux.Vars(r)

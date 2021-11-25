@@ -6,7 +6,7 @@ import (
 	"github.com/xanthangum1/gorilla_micro/data"
 )
 
-// swagger:route GET /products products GetProducts
+// swagger:route GET /products products getProducts
 // Returns a list of products
 // responses:
 //	200: productsReponse
