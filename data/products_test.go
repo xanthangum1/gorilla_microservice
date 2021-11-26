@@ -1,127 +1,65 @@
 package data
 
 import (
-	"fmt"
+	"bytes"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// ErrProductNotFound is an error raised when a product can not be found in the database
-var ErrProductNotFound = fmt.Errorf("Product not found")
-
-// Product defines the structure for an API product
-// swagger:model
-type Product struct {
-	// the id for the product
-	//
-	// required: false
-	// min: 1
-	ID int `json:"id"` // Unique identifier for the product
-
-	// the name for this poduct
-	//
-	// required: true
-	// max length: 255
-	Name string `json:"name" validate:"required"`
-
-	// the description for this poduct
-	//
-	// required: false
-	// max length: 10000
-	Description string `json:"description"`
-
-	// the price for the product
-	//
-	// required: true
-	// min: 0.01
-	Price float32 `json:"price" validate:"required,gt=0"`
-
-	// the SKU for the product
-	//
-	// required: true
-	// pattern: [a-z]+-[a-z]+-[a-z]+
-	SKU string `json:"sku" validate:"sku"`
-}
-
-// Products defines a slice of Product
-type Products []*Product
-
-// GetProducts returns all products from the database
-func GetProducts() Products {
-	return productList
-}
-
-// GetProductByID returns a single product which matches the id from the
-// database.
-// If a product is not found this function returns a ProductNotFound error
-func GetProductByID(id int) (*Product, error) {
-	i := findIndexByProductID(id)
-	if id == -1 {
-		return nil, ErrProductNotFound
+func TestProductMissingNameReturnsErr(t *testing.T) {
+	p := Product{
+		Price: 1.22,
 	}
 
-	return productList[i], nil
+	v := NewValidation()
+	err := v.Validate(p)
+	assert.Len(t, err, 1)
 }
 
-// UpdateProduct replaces a product in the database with the given
-// item.
-// If a product with the given id does not exist in the database
-// this function returns a ProductNotFound error
-func UpdateProduct(p Product) error {
-	i := findIndexByProductID(p.ID)
-	if i == -1 {
-		return ErrProductNotFound
+func TestProductMissingPriceReturnsErr(t *testing.T) {
+	p := Product{
+		Name:  "abc",
+		Price: -1,
 	}
 
-	// update the product in the DB
-	productList[i] = &p
-
-	return nil
+	v := NewValidation()
+	err := v.Validate(p)
+	assert.Len(t, err, 1)
 }
 
-// AddProduct adds a new product to the database
-func AddProduct(p Product) {
-	// get the next id in sequence
-	maxID := productList[len(productList)-1].ID
-	p.ID = maxID + 1
-	productList = append(productList, &p)
-}
-
-// DeleteProduct deletes a product from the database
-func DeleteProduct(id int) error {
-	i := findIndexByProductID(id)
-	if i == -1 {
-		return ErrProductNotFound
+func TestProductInvalidSKUReturnsErr(t *testing.T) {
+	p := Product{
+		Name:  "abc",
+		Price: 1.22,
+		SKU:   "abc",
 	}
 
-	productList = append(productList[:i], productList[i+1])
-
-	return nil
+	v := NewValidation()
+	err := v.Validate(p)
+	assert.Len(t, err, 1)
 }
 
-// findIndex finds the index of a product in the database
-// returns -1 when no product can be found
-func findIndexByProductID(id int) int {
-	for i, p := range productList {
-		if p.ID == id {
-			return i
-		}
+func TestValidProductDoesNOTReturnsErr(t *testing.T) {
+	p := Product{
+		Name:  "abc",
+		Price: 1.22,
+		SKU:   "abc-efg-hji",
 	}
 
-	return -1
+	v := NewValidation()
+	err := v.Validate(p)
+	assert.Len(t, err, 1)
 }
 
-var productList = []*Product{
-	&Product{
-		ID:          1,
-		Name:        "Latte",
-		Description: "Frothy milky coffee",
-		Price:       2.45,
-		SKU:         "abc323",
-	},
-	&Product{
-		ID:          2,
-		Name:        "Esspresso",
-		Description: "Short and strong coffee without milk",
-		Price:       1.99,
-		SKU:         "fjd34",
-	},
+func TestProductsToJSON(t *testing.T) {
+	ps := []*Product{
+		&Product{
+			Name: "abc",
+		},
+	}
+
+	b := bytes.NewBufferString("")
+	err := ToJSON(ps, b)
+	assert.NoError(t, err)
 }
