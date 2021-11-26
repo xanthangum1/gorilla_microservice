@@ -20,7 +20,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/xanthangum1/gorilla_micro/data"
+	"github.com/xanthangum1/gorilla_microservice/data"
 )
 
 // KeyProduct is a key used for the Product object in the context

@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/xanthangum1/gorilla_micro/data"
+	"github.com/xanthangum1/gorilla_microservice/data"
 )
 
 // swagger:route DELETE /products/{id} products deleteProduct

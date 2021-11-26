@@ -2,7 +2,7 @@ package main
 
 import (
 	"testing"
-	"github.com/xanthangum1/gorilla_micro/client/client"
+	"github.com/xanthangum1/gorilla_microservice/client/client"
 )
 
 func TestOurClient{t *testing.T} {
