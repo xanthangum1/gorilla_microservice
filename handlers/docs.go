@@ -15,7 +15,7 @@
 // swagger:meta
 package handlers
 
-import "github.com/xanthangum1/gorilla_micro/data"
+import "github.com/xanthangum1/gorilla_microservice/data"
 
 //
 // NOTE: Types defined here are purely for documentation purposes

@@ -1,4 +1,4 @@
-module github.com/xanthangum1/gorilla_micro
+module github.com/xanthangum1/gorilla_microservice
 
 go 1.17
 

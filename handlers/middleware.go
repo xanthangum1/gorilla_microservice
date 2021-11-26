@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/xanthangum1/gorilla_micro/data"
+	"github.com/xanthangum1/gorilla_microservice/data"
 )
 
 // MiddlewareValidateProduct validates the product in the request and calls next if ok
