@@ -3,8 +3,8 @@ consumes:
 - application/json
 definitions:
   GenericError:
-    description: GenericError GenericError GenericError is a generic error message
-      returned by a server
+    description: GenericError GenericError GenericError GenericError is a generic
+      error message returned by a server
     properties:
       message:
         description: message
@@ -49,8 +49,8 @@ definitions:
     type: object
     x-go-package: github.com/xanthangum1/gorilla_microservice/data
   ValidationError:
-    description: ValidationError ValidationError ValidationError is a collection of
-      validation error messages
+    description: ValidationError ValidationError ValidationError ValidationError is
+      a collection of validation error messages
     properties:
       messages:
         description: messages
@@ -71,7 +71,7 @@ paths:
       operationId: listProducts
       responses:
         "200":
-          $ref: '#/responses/productResponse'
+          $ref: '#/responses/productsResponse'
       tags:
       - products
     post:
