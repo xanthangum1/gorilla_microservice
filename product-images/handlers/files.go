@@ -31,6 +31,11 @@ func (f *Files) UploadREST(rw http.ResponseWriter, r *http.Request) {
 	f.log.Info("Handle POST", "id", id, "filename", fn)
 
 	// no need to check for invalid id or filename as the mux router will not send requests
+	// if id == "" || fn == "" {
+	// 	f.invalidURI(r.URL.String(), rw)
+	// 	return
+	// }
+
 	// here unless they have the correct parameters
 	f.saveFile(id, fn, rw, r.Body)
 }
