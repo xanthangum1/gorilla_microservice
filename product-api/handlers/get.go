@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
-	"github.com/xanthangum1/gorilla_microservice/data"
+	"github.com/xanthangum1/gorilla_microservice/product-api/data"
 )
 
 // swagger:route GET /products products listProducts

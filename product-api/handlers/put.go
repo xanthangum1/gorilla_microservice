@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/xanthangum1/gorilla_microservice/data"
+	"github.com/xanthangum1/gorilla_microservice/product-api/data"
 )
 
 // swagger:route PUT /products products updateProduct
