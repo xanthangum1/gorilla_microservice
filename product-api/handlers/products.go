@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/mux"
 	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
-	"github.com/xanthangum1/gorilla_microservice/data"
+	"github.com/xanthangum1/gorilla_microservice/product-api/data"
 )
 
 // KeyProduct is a key used for the Product object in the context

@@ -15,7 +15,7 @@ import (
 	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
 	"github.com/xanthangum1/gorilla_microservice/product-api/data"
 	"github.com/xanthangum1/gorilla_microservice/product-api/handlers"
-	"google.golang.org/grpc"
+	grpc "google.golang.org/grpc"
 )
 
 var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
@@ -27,7 +27,7 @@ func main() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 	v := data.NewValidation()
 
-	conn, err := gprc.Dial("localhost:9092", grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:9092", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func main() {
 	cc := protos.NewCurrencyClient(conn)
 
 	// create the handlers
-	ph := handlers.NewProducts(l, v)
+	ph := handlers.NewProducts(l, v, cc)
 
 	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
