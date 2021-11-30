@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/xanthangum1/gorilla_microservice/sdk/client"
-	"github.com/xanthangum1/gorilla_microservice/sdk/client/products"
+	"github.com/xanthangum1/gorilla_microservice/product-api/sdk/client"
+	"github.com/xanthangum1/gorilla_microservice/product-api/sdk/client/products"
 )
 
 func TestOurClient(t *testing.T) {

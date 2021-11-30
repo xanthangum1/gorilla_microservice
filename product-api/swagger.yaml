@@ -47,7 +47,7 @@ definitions:
     - price
     - sku
     type: object
-    x-go-package: github.com/xanthangum1/gorilla_microservice/data
+    x-go-package: github.com/xanthangum1/gorilla_microservice/product-api/data
   ValidationError:
     description: ValidationError ValidationError ValidationError ValidationError is
       a collection of validation error messages
