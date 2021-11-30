@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 
-	"github.com/xanthangum1/gorilla_microservice/sdk/models"
+	"github.com/xanthangum1/gorilla_microservice/product-api/sdk/models"
 )
 
 // DeleteProductReader is a Reader for the DeleteProduct structure.
