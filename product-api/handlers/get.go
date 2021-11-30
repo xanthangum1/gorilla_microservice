@@ -73,6 +73,8 @@ func (p *Products) ListSingle(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.l.Printf("Resp %#v", resp)
+
 	prod.Price = prod.Price * resp.Rate
 
 	err = data.ToJSON(prod, rw)
