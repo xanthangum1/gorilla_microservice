@@ -13,8 +13,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nicholasjackson/env"
 	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
-	"github.com/xanthangum1/gorilla_microservice/data"
-	"github.com/xanthangum1/gorilla_microservice/handlers"
+	"github.com/xanthangum1/gorilla_microservice/product-api/data"
+	"github.com/xanthangum1/gorilla_microservice/product-api/handlers"
 	"google.golang.org/grpc"
 )
 
