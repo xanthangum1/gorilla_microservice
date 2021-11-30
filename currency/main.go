@@ -8,6 +8,7 @@ import (
 	"github.com/xanthangum1/gorilla_microservice/currency/server"
 
 	hclog "github.com/hashicorp/go-hclog"
+	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
