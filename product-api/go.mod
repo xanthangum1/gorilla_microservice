@@ -1,4 +1,4 @@
-module github.com/xanthangum1/gorilla_microservice
+module github.com/xanthangum1/gorilla_microservice/product-api
 
 go 1.17
 
