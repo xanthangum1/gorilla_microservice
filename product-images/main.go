@@ -10,12 +10,12 @@ import (
 	gohandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	hclog "github.com/hashicorp/go-hclog"
-	"github.com/nicholasjackson/building-microservices-youtube/product-images/files"
-	"github.com/nicholasjackson/building-microservices-youtube/product-images/handlers"
 	"github.com/nicholasjackson/env"
+	"github.com/xanthangum1/gorilla_microservice/product-images/files"
+	"github.com/xanthangum1/gorilla_microservice/product-images/handlers"
 )
 
-var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind address for the server")
+var bindAddress = env.String("BIND_ADDRESS", false, ":9091", "Bind address for the server")
 var logLevel = env.String("LOG_LEVEL", false, "debug", "Log output level for the server [debug, info, trace]")
 var basePath = env.String("BASE_PATH", false, "./imagestore", "Base path to save images")
 
