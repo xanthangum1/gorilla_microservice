@@ -32,7 +32,7 @@ func (e *ExchangeRates) getRates() error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Expected error code 200 got %d", resp.StatusCode)
+		return fmt.Errorf("Failed API call: got %d", resp.StatusCode)
 	}
 	defer resp.Body.Close()
 
@@ -44,10 +44,8 @@ func (e *ExchangeRates) getRates() error {
 		if err != nil {
 			return err
 		}
-
 		e.rates[c.Currency] = r
 	}
-
 	return nil
 }
 
