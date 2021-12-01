@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	hclog "github.com/hashipcorp/go-hclog"
+	hclog "github.com/hashicorp/go-hclog"
 )
 
 //ExchangeRates is a Struct for exchange rate
@@ -16,15 +16,17 @@ type ExchangeRates struct {
 }
 
 //NewRates is a holder for new rates taken from api
-func NewRates(l hclog.Logger) (*ExchangRates, error) {
-	er := &ExchangeRates{log: l, rate: map[string]float64{}}
+func NewRates(l hclog.Logger) (*ExchangeRates, error) {
+	er := &ExchangeRates{log: l, rates: map[string]float64{}}
 
-	return er, nil
+	err := er.getRates()
+
+	return er, err
 }
 
 //getRates gets exchange rate info from api
 func (e *ExchangeRates) getRates() error {
-	resp, err := http.DefaultClient.Get("https://www.ecb.europa.eu/stats/euroxref/euroxref-daily.xml")
+	resp, err := http.DefaultClient.Get("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml")
 	if err != nil {
 		return nil
 	}
@@ -44,12 +46,12 @@ func (e *ExchangeRates) getRates() error {
 		}
 		e.rates[c.Currency] = r
 	}
-
+	return nil
 }
 
 // Cubes holds many cube
 type Cubes struct {
-	CubeData []Cube `xml:"Cube>Cube>Cube`
+	CubeData []Cube `xml:"Cube>Cube>Cube"`
 }
 
 // Cube holds info from exchange rate api
