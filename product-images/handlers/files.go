@@ -7,8 +7,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/hashicorp/go-hclog"
-	"github.com/nicholasjackson/building-microservices-youtube/product-images/files"
+	hclog "github.com/hashicorp/go-hclog"
+	"github.com/xanthangum1/gorilla_microservice/product-images/files"
 )
 
 // Files is a handler for reading and writing files
@@ -30,17 +30,11 @@ func (f *Files) UploadREST(rw http.ResponseWriter, r *http.Request) {
 
 	f.log.Info("Handle POST", "id", id, "filename", fn)
 
-	// no need to check for invalid id or filename as the mux router will not send requests
-	// if id == "" || fn == "" {
-	// 	f.invalidURI(r.URL.String(), rw)
-	// 	return
-	// }
-
 	// here unless they have the correct parameters
 	f.saveFile(id, fn, rw, r.Body)
 }
 
-// UploadMultipar something
+// UploadMultipart something
 func (f *Files) UploadMultipart(rw http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(128 * 1024)
 	if err != nil {
