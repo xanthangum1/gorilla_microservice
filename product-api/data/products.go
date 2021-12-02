@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
 )
 
 // ErrProductNotFound is an error raised when a product can not be found in the database
@@ -43,6 +44,11 @@ type Product struct {
 
 // Products defines a slice of Product
 type Products []*Product
+
+type ProductsDB struct {
+	currency protos.CurrencyClient
+	log      hclog.Logger
+}
 
 // GetProducts returns all products from the database
 func GetProducts() Products {
