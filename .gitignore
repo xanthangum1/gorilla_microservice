@@ -1,0 +1,4 @@
+.env
+product-images/imagestore/
+.DS_Store
+.vscode
