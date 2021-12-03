@@ -81,7 +81,7 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 // GetProductByID returns a single product which matches the id from the
 // database.
 // If a product is not found this function returns a ProductNotFound error
-func (p *ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
+func (p ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
 	i := findIndexByProductID(id)
 	if id == -1 {
 		return nil, ErrProductNotFound
@@ -95,8 +95,8 @@ func (p *ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
 		return nil, err
 	}
 
-	np := *productList[i]
-	np.Price = np.Price = rate
+	np := productList[i]
+	np.Price = rate
 
 	return np, nil
 }
