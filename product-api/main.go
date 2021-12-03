@@ -37,6 +37,9 @@ func main() {
 	// create currency client
 	cc := protos.NewCurrencyClient(conn)
 
+	// create database instance
+	db data.NewProductsDBcc, l
+
 	// create the handlers
 	ph := handlers.NewProducts(l, v, cc)
 
@@ -74,7 +77,7 @@ func main() {
 	s := http.Server{
 		Addr:         "localhost:9090",  // configure the bind address
 		Handler:      ch(sm),            // set the default handler
-		ErrorLog:     l,                 // set the logger for the server
+		ErrorLog:     l.StandardLogger(&hclog.StandardLoggerOptions{}),                 // set the logger for the server
 		ReadTimeout:  5 * time.Second,   // max time to read request from the client
 		WriteTimeout: 10 * time.Second,  // max time to write response to the client
 		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
@@ -86,7 +89,7 @@ func main() {
 
 		err := s.ListenAndServe()
 		if err != nil {
-			l.Printf("Error starting server: %s\n", err)
+			l.Error("Error starting server: %s\n", err)
 			os.Exit(1)
 		}
 	}()
