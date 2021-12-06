@@ -21,7 +21,7 @@ func (p *Products) Delete(rw http.ResponseWriter, r *http.Request) {
 
 	p.l.Debug("deleting record id", "id", id)
 
-	err := data.DeleteProduct(id)
+	err := p.productsDB.DeleteProduct(id)
 	if err == data.ErrProductNotFound {
 		p.l.Debug("deleting record id does not exist")
 
