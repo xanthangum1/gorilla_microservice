@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	hclog "github.com/hashicorp/go-hclog"
-	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
+	protos "github.com/xanthangum1/gorilla_microservice/currency/currency_client"
 )
 
 // ErrProductNotFound is an error raised when a product can not be found in the database
@@ -36,7 +36,7 @@ type Product struct {
 	//
 	// required: true
 	// min: 0.01
-	Price float64 `json:"price" validate:"required"`
+	Price float64 `json:"price" validate:"required,gt=0"`
 
 	// the SKU for the product
 	//
@@ -66,7 +66,7 @@ func NewProductsDB(c protos.CurrencyClient, l hclog.Logger) *ProductsDB {
 func (p *ProductsDB) handleUpdates() {
 	sub, err := p.currency.SubscribeRates(context.Background())
 	if err != nil {
-		p.log.Error("Unable to subscribe for rate", "error", err)
+		p.log.Error("Unable to subscribe for rates", "error", err)
 	}
 
 	p.client = sub
@@ -74,8 +74,9 @@ func (p *ProductsDB) handleUpdates() {
 	for {
 		rr, err := sub.Recv()
 		p.log.Info("Recieved updated rate from server", "dest", rr.GetDestination().String())
+
 		if err != nil {
-			p.log.Error("Error recieving message", "error", err)
+			p.log.Error("Error receiving message", "error", err)
 			return
 		}
 
@@ -89,12 +90,7 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 		return productList, nil
 	}
 
-	rr := &protos.RateRequest{
-		Base:        protos.Currencies(protos.Currencies_value["EUR"]),
-		Destination: protos.Currencies(protos.Currencies_value["GBP"]),
-	}
-
-	resp, err := p.currency.GetRate(context.Background(), rr)
+	rate, err := p.getRate(currency)
 	if err != nil {
 		p.log.Error("Unable to get rate", "currency", currency, "error", err)
 		return nil, err
@@ -103,33 +99,36 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 	pr := Products{}
 	for _, p := range productList {
 		np := *p
-		np.Price = float64(np.Price) * float64(resp.Rate)
+		np.Price = np.Price * rate
 		pr = append(pr, &np)
 	}
+
 	return pr, nil
 }
 
 // GetProductByID returns a single product which matches the id from the
 // database.
 // If a product is not found this function returns a ProductNotFound error
-func (p ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
+func (p *ProductsDB) GetProductByID(id int, currency string) (*Product, error) {
 	i := findIndexByProductID(id)
 	if id == -1 {
 		return nil, ErrProductNotFound
 	}
+
 	if currency == "" {
 		return productList[i], nil
 	}
+
 	rate, err := p.getRate(currency)
 	if err != nil {
-		p.log.Error("error getting new rate", "currency", currency, "error", err)
+		p.log.Error("Unable to get rate", "currency", currency, "error", err)
 		return nil, err
 	}
 
-	np := productList[i]
-	np.Price = rate
+	np := *productList[i]
+	np.Price = np.Price * rate
 
-	return np, nil
+	return &np, nil
 }
 
 // UpdateProduct replaces a product in the database with the given
@@ -181,13 +180,24 @@ func findIndexByProductID(id int) int {
 }
 
 func (p *ProductsDB) getRate(destination string) (float64, error) {
+	// if cached return
+	if r, ok := p.rates[destination]; ok {
+		return r, nil
+	}
+
 	rr := &protos.RateRequest{
 		Base:        protos.Currencies(protos.Currencies_value["EUR"]),
 		Destination: protos.Currencies(protos.Currencies_value[destination]),
 	}
 
+	// get initial rate
 	resp, err := p.currency.GetRate(context.Background(), rr)
-	return float64(resp.Rate), err
+	p.rates[destination] = resp.Rate // update cache
+
+	// subscribe for updates
+	p.client.Send(rr)
+
+	return resp.Rate, err
 }
 
 var productList = []*Product{
