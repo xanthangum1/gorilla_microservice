@@ -2,8 +2,9 @@ package data
 
 import (
 	"fmt"
-	hclog "github.com/hashicorp/go-hclog"
 	"testing"
+
+	hclog "github.com/hashicorp/go-hclog"
 )
 
 func TestNewRates(t *testing.T) {
