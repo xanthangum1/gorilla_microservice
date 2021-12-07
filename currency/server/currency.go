@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
+	protos "github.com/xanthangum1/gorilla_microservice/currency/currency_client"
 	"github.com/xanthangum1/gorilla_microservice/currency/data"
-	protos "github.com/xanthangum1/gorilla_microservice/currency/protos/currency"
 
 	hclog "github.com/hashicorp/go-hclog"
 )
