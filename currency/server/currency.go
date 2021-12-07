@@ -90,4 +90,3 @@ func (c *Currency) SubscribeRates(src protos.Currency_SubscribeRatesServer) erro
 	}
 	return nil
 }
-{"Base": "GBP", "Destination": "USD"}
