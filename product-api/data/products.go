@@ -36,7 +36,7 @@ type Product struct {
 	//
 	// required: true
 	// min: 0.01
-	Price float64 `json:"price" validate:"required,gt=0"`
+	Price float64 `json:"price" validate:"required"`
 
 	// the SKU for the product
 	//
@@ -77,7 +77,7 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 	pr := Products{}
 	for _, p := range productList {
 		np := *p
-		np.Price == np.Price*resp.Rate
+		np.Price = float64(np.Price) * float64(resp.Rate)
 		pr = append(pr, &np)
 	}
 	return pr, nil
@@ -161,7 +161,7 @@ func (p *ProductsDB) getRate(destination string) (float64, error) {
 	}
 
 	resp, err := p.currency.GetRate(context.Background(), rr)
-	return resp.Rate, err
+	return float64(resp.Rate), err
 }
 
 var productList = []*Product{
