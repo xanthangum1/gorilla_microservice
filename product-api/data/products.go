@@ -51,10 +51,36 @@ type Products []*Product
 type ProductsDB struct {
 	currency protos.CurrencyClient
 	log      hclog.Logger
+	rates    map[string]float64
+	client   protos.Currency_SubscribeRatesClient
 }
 
 func NewProductsDB(c protos.CurrencyClient, l hclog.Logger) *ProductsDB {
-	return &ProductsDB{c, l}
+	pb := &ProductsDB{c, l, make(map[string]float64), nil}
+
+	go pb.handleUpdates()
+
+	return pb
+}
+
+func (p *ProductsDB) handleUpdates() {
+	sub, err := p.currency.SubscribeRates(context.Background())
+	if err != nil {
+		p.log.Error("Unable to subscribe for rate", "error", err)
+	}
+
+	p.client = sub
+
+	for {
+		rr, err := sub.Recv()
+		p.log.Info("Recieved updated rate from server", "dest", rr.GetDestination().String())
+		if err != nil {
+			p.log.Error("Error recieving message", "error", err)
+			return
+		}
+
+		p.rates[rr.Destination.String()] = rr.Rate
+	}
 }
 
 // GetProducts returns all products from the database
