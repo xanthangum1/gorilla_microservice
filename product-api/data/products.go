@@ -36,7 +36,7 @@ type Product struct {
 	//
 	// required: true
 	// min: 0.01
-	Price float64 `json:"price" validate:"required,gt=0"`
+	Price float64 `json:"price" validate:"required"`
 
 	// the SKU for the product
 	//
@@ -51,10 +51,36 @@ type Products []*Product
 type ProductsDB struct {
 	currency protos.CurrencyClient
 	log      hclog.Logger
+	rates    map[string]float64
+	client   protos.Currency_SubscribeRatesClient
 }
 
 func NewProductsDB(c protos.CurrencyClient, l hclog.Logger) *ProductsDB {
-	return &ProductsDB{c, l}
+	pb := &ProductsDB{c, l, make(map[string]float64), nil}
+
+	go pb.handleUpdates()
+
+	return pb
+}
+
+func (p *ProductsDB) handleUpdates() {
+	sub, err := p.currency.SubscribeRates(context.Background())
+	if err != nil {
+		p.log.Error("Unable to subscribe for rate", "error", err)
+	}
+
+	p.client = sub
+
+	for {
+		rr, err := sub.Recv()
+		p.log.Info("Recieved updated rate from server", "dest", rr.GetDestination().String())
+		if err != nil {
+			p.log.Error("Error recieving message", "error", err)
+			return
+		}
+
+		p.rates[rr.Destination.String()] = rr.Rate
+	}
 }
 
 // GetProducts returns all products from the database
@@ -77,7 +103,7 @@ func (p *ProductsDB) GetProducts(currency string) (Products, error) {
 	pr := Products{}
 	for _, p := range productList {
 		np := *p
-		np.Price == np.Price*resp.Rate
+		np.Price = float64(np.Price) * float64(resp.Rate)
 		pr = append(pr, &np)
 	}
 	return pr, nil
@@ -155,12 +181,22 @@ func findIndexByProductID(id int) int {
 }
 
 func (p *ProductsDB) getRate(destination string) (float64, error) {
+	// if cached return
+	if r, ok := p.rates[destination]; ok {
+		return r, nil
+	}
 	rr := &protos.RateRequest{
 		Base:        protos.Currencies(protos.Currencies_value["EUR"]),
 		Destination: protos.Currencies(protos.Currencies_value[destination]),
 	}
 
+	// get initial rate
 	resp, err := p.currency.GetRate(context.Background(), rr)
+	p.rates[destination] = resp.Rate
+
+	// subscribe for updates
+	p.client.Send(rr)
+
 	return resp.Rate, err
 }
 
